@@ -72,7 +72,7 @@ class Report:
         figtex = figtemplate.format(fn=str(figfn), caption=caption, width=width)
         self.add_body(figtex)
 
-    def _write_tex(self, fn: Optional[Path, None] = None):
+    def _write_tex(self, fn: Optional[Path] = None):
         """Write the tex document to the temp directory"""
         if not fn:
             fn = self.maintex
