@@ -2,6 +2,8 @@ import tempfile
 from subprocess import run
 import shutil
 from pathlib import Path
+import matplotlib.pyplot as plt
+from typing import Optional
 
 header = r"""
 \documentclass{{article}}
@@ -28,7 +30,12 @@ figtemplate = r"""
 
 
 class Report:
-    def __init__(self, title="Title test"):
+    """This object keep track of the necessary information to create small report documents using a LaTeX template.
+    Files (such as figures, images, tex code,...) are stored in a temporary directory that is automatically cleaned up
+    when this object is destroyed.
+    """
+
+    def __init__(self, title: str = "Title test"):
         self._docdir = tempfile.TemporaryDirectory()
         self.docdir = Path(self._docdir.name)
         self.maintex = self.docdir / "main.tex"
@@ -36,11 +43,11 @@ class Report:
         self.body = ""
         self.title = title
 
-    def add_body(self, string):
+    def add_body(self, string: str):
         self.body += string
 
-    def add_section(self, title):
-        """ Adds a new section to the document
+    def add_section(self, title: str):
+        """Adds a new section to the document
 
         Argument:
             title: name of the new section
@@ -48,8 +55,8 @@ class Report:
         tex = r"\section{{{}}}\n".format(title)
         self.add_body(tex)
 
-    def add_figure(self, fig, caption, width=r"\textwidth"):
-        """ Adds a pyplot figure to the document
+    def add_figure(self, fig: plt.Figure, caption: str, width: str = r"\textwidth"):
+        """Adds a pyplot figure to the document
 
         Arguments:
             fig: pyplot figure handle
@@ -65,7 +72,8 @@ class Report:
         figtex = figtemplate.format(fn=str(figfn), caption=caption, width=width)
         self.add_body(figtex)
 
-    def write_tex(self, fn=None):
+    def _write_tex(self, fn: Optional[Path, None] = None):
+        """Write the tex document to the temp directory"""
         if not fn:
             fn = self.maintex
 
@@ -74,15 +82,22 @@ class Report:
         with open(fn, "w") as f:
             f.write(buffer)
 
-    def compile_tex(self):
+    def _compile_tex(self):
+        """Run pdflatex to create the document."""
         cmd = ["pdflatex", "-interaction", "nonstopmode", str(self.maintex)]
 
         run(cmd, cwd=self.docdir)
         run(cmd, cwd=self.docdir)
 
-    def build(self, fn_out):
-        self.write_tex()
-        self.compile_tex()
+    def build(self, fn_out: Path):
+        """Create the document by compiling tex code with pdflatex. The resulting document is copied from the temporary
+        directory to the desired output destination.
+
+        Arguments:
+            fn_out: output path for the report
+        """
+        self._write_tex()
+        self._compile_tex()
 
         mainpdf = self.docdir / self.maintex.name.replace("tex", "pdf")
         shutil.copy(mainpdf, fn_out)
