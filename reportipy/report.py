@@ -8,6 +8,7 @@ from typing import Optional
 header = r"""
 \documentclass{{article}}
 \usepackage{{graphicx}}
+\usepackage[section]{{placeins}}
 \usepackage[margin=0.5in]{{geometry}}
 
 \title{{ {title} }}
@@ -52,7 +53,7 @@ class Report:
         Argument:
             title: name of the new section
         """
-        tex = r"\section{{{}}}\n".format(title)
+        tex = r"\section{{{}}}".format(title) + "\n\n"
         self.add_body(tex)
 
     def add_figure(self, fig: plt.Figure, caption: str, width: str = r"\textwidth"):
