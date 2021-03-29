@@ -25,7 +25,7 @@ figtemplate = r"""
 \begin{{figure}}[h]
     \centering
     \includegraphics[width={width}]{{{fn}}}
-    \caption{{ {caption}  }}
+    \caption{{{caption}}}
 \end{{figure}}
 """
 
@@ -70,7 +70,7 @@ class Report:
         fig.savefig(figfn, dpi=120)
         self.figidx += 1
 
-        figtex = figtemplate.format(fn=str(figfn), caption=caption, width=width)
+        figtex = figtemplate.format(fn=figfn.name, caption=caption, width=width)
         self.add_body(figtex)
 
     def _write_tex(self, fn: Optional[Path] = None):
