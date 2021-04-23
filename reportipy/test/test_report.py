@@ -13,13 +13,32 @@ class ReportTest(unittest.TestCase):
     def setUp(self):
         self.report = Report("DocumentName")
 
-    def test_compile(self):
-        pass
-
     def test_title(self):
         self.report._write_tex()
         tex = self.tex_contents()
         pattern = r"^\\title{ DocumentName }"
+        match = re.search(pattern, tex, flags=re.MULTILINE)
+        if not match:
+            raise ValueError("Pattern '{}' not found".format(pattern))
+
+    def test_section(self):
+        sectionname = "TestSection"
+        self.report.add_section(sectionname)
+
+        self.report._write_tex()
+        tex = self.tex_contents()
+        pattern = r"^\\section{{{}}}".format(sectionname)
+        match = re.search(pattern, tex, flags=re.MULTILINE)
+        if not match:
+            raise ValueError("Pattern '{}' not found".format(pattern))
+
+    def test_subsection(self):
+        sectionname = "TestSubSection"
+        self.report.add_subsection(sectionname)
+
+        self.report._write_tex()
+        tex = self.tex_contents()
+        pattern = r"^\\subsection{{{}}}".format(sectionname)
         match = re.search(pattern, tex, flags=re.MULTILINE)
         if not match:
             raise ValueError("Pattern '{}' not found".format(pattern))

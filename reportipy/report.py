@@ -56,6 +56,15 @@ class Report:
         tex = r"\section{{{}}}".format(title) + "\n\n"
         self.add_body(tex)
 
+    def add_subsection(self, title: str):
+        """Adds a new subsection to the document
+
+        Argument:
+            title: name of the new subsection
+        """
+        tex = r"\subsection{{{}}}".format(title) + "\n\n"
+        self.add_body(tex)
+
     def add_figure(self, fig: plt.Figure, caption: str, width: str = r"\textwidth"):
         """Adds a pyplot figure to the document
 
